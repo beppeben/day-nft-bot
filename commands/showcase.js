@@ -9,18 +9,13 @@ const execute = async (message, args) => {
         if (account) {
             console.log("Returned account from ecid", account);
             let date = args[0];
-            
-            var test_account = "0x1d1f11dcbae7f839";
-            // use actual account once in mainnet
-            let url = await queryDayNFTUrl(test_account, date);
+            let url = await queryDayNFTUrl(account, date);
             console.log("Returned url", url);
             if (url != null) {
                 const exampleEmbed = new MessageEmbed()
-                .setColor('#0099ff')
-                .setTitle(message.member.user.username + " holds this amazing DayNFT")
-                // use actual url once in mainnet
-                .setImage("https://test.day-nft.io/imgs/0.png")
-
+                    .setColor('#0099ff')
+                    .setTitle(message.member.user.username + " holds this amazing DayNFT")
+                    .setImage(url)
                 message.channel.send({ embeds: [exampleEmbed] });
             } else {
                 message.reply({ ephemeral: true, content: "You don't hold this NFT, please check the date and try again!"});

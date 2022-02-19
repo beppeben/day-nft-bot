@@ -3,10 +3,10 @@ const t = require("@onflow/types");
 const { setEnvironment } = require("flow-cadut");
 
 const queryDayNFTUrl = async (address, date) => {
-  await setEnvironment("testnet");
+  await setEnvironment("mainnet");
   const url = await fcl.send([
     fcl.script(`
-      import DayNFT from 0x0b7f00d13cd033bd
+      import DayNFT from 0x1600b04bf033fb99
 
       pub fun main(address: Address, date: String): String? {
         let collectionRef = getAccount(address)
