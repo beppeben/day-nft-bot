@@ -1,6 +1,6 @@
 const { checkEmeraldIdentityDiscord } = require('../flowscripts/emerald_identity.js');
 const { MessageEmbed } = require('discord.js');
-const { queryDayNFTUrl } = require('../flowscripts/query_daynft_url.js');
+const { queryDayNFT } = require('../flowscripts/query_daynft.js');
 
 const execute = async (message, args) => {
     console.log("Showcasing NFT");
@@ -9,12 +9,13 @@ const execute = async (message, args) => {
         if (account) {
             console.log("Returned account from ecid", account);
             let date = args[0];
-            let url = await queryDayNFTUrl(account, date);
+            let [url, id] = await queryDayNFT(account, date);
             console.log("Returned url", url);
             if (url != null) {
                 const exampleEmbed = new MessageEmbed()
                     .setColor('#0099ff')
                     .setTitle(message.member.user.username + " holds this amazing DayNFT")
+                    .setDescription('ID #' + id)
                     .setImage(url)
                 message.channel.send({ embeds: [exampleEmbed] });
             } else {

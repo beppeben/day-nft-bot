@@ -2,27 +2,29 @@ const fcl = require("@onflow/fcl");
 const t = require("@onflow/types");
 const { setEnvironment } = require("flow-cadut");
 
-const queryDayNFTUrl = async (address, date) => {
+const queryDayNFT = async (address, date) => {
   await setEnvironment("mainnet");
   const url = await fcl.send([
     fcl.script(`
       import DayNFT from 0x1600b04bf033fb99
 
-      pub fun main(address: Address, date: String): String? {
+      pub fun main(address: Address, date: String): [String?] {
         let collectionRef = getAccount(address)
           .getCapability(DayNFT.CollectionPublicPath)
           .borrow<&DayNFT.Collection{DayNFT.CollectionPublic}>()
           ?? panic("Could not get reference to the NFT Collection")
         
-        var res: String? = nil
+        var res_url: String? = nil
+        var res_id: String? = nil
         let ids = collectionRef.getIDs()
         for id in ids {
           let nft = collectionRef.borrowDayNFT(id: id)!
           if (nft!.dateStr == date) {
-            res = nft!.thumbnail
+            res_url = nft!.thumbnail
+            res_id = id.toString()
           }
         }
-        return res
+        return [res_url, res_id]
       }
     `),
     fcl.args([
@@ -35,5 +37,5 @@ const queryDayNFTUrl = async (address, date) => {
 }
 
 module.exports = {
-  queryDayNFTUrl
+  queryDayNFT
 }
