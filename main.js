@@ -2,9 +2,10 @@ const { Client, Intents, Collection } = require('discord.js');
 const { checkEmeraldIdentityDiscord} = require('./flowscripts/emerald_identity.js');
 const fs = require('fs');
 const fcl = require("@onflow/fcl");
+const schedule = require('node-schedule');
 
 const prefix = '!';
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS] });
 
 // Gets all of our commands from our commands folder
 client.commands = new Collection();
@@ -16,6 +17,12 @@ for (const file of commandFiles) {
 
 client.once('ready', () => {
     console.log('DayNFT bot is online!');
+    
+    // Assign/remove roles every 10 minutes
+    schedule.scheduleJob("*/10 * * * *", function() {
+        const guild = client.guilds.cache.get('939459994611494962');
+        client.commands.get('assign_roles').execute(guild);
+    }); 
 })
 
 // When a user types a message
@@ -30,7 +37,7 @@ client.on('messageCreate', message => {
     } else if (command === 'showcase') {
         client.commands.get('showcase').execute(message, args);
     }
-});
+}); 
 
 
 // This is the bot's token
