@@ -49,11 +49,11 @@ client.on('messageCreate', message => {
     }
 });
 
-router.get('/test',(req, res) => {
+router.get('/hooks/test',(req, res) => {
     res.end('blah');
 });
 
-router.post('/bids',(req, res) => {
+router.post('/hooks/bids',(req, res) => {
     let txId = req.body.flowTransactionId;
     console.log(txId);
     client.commands.get('notifyBidToDiscord').execute(client, txId);
