@@ -1,8 +1,18 @@
 const { Client, Intents, Collection } = require('discord.js');
 const { checkEmeraldIdentityDiscord} = require('./flowscripts/emerald_identity.js');
 const fs = require('fs');
-const fcl = require("@onflow/fcl");
+
+
 const schedule = require('node-schedule');
+
+
+const express = require("express");
+const bodyParser = require("body-parser");
+const router = express.Router();
+const app = express();
+app.use("/",router);
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const prefix = '!';
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS] });
@@ -37,7 +47,20 @@ client.on('messageCreate', message => {
     } else if (command === 'showcase') {
         client.commands.get('showcase').execute(message, args);
     }
-}); 
+});
+
+
+router.post('/bids',(req, res) => {
+    let txId = req.body.flowTransactionId;
+    client.commands.get('notifyBidToDiscord').execute(client, txId);
+    res.end('');
+});
+
+app.listen(3000, async () => {
+    console.log("Started on PORT 3000");
+
+    //client.commands.get('notifyBidToDiscord').execute(client, "04f3bb26804b0f4198ed6359ebe580670a5f05fee96f29378d163ef30ec4ed07");
+})
 
 
 // This is the bot's token
