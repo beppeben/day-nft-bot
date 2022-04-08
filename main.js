@@ -1,18 +1,17 @@
 const { Client, Intents, Collection } = require('discord.js');
 const { checkEmeraldIdentityDiscord} = require('./flowscripts/emerald_identity.js');
 const fs = require('fs');
-
-
 const schedule = require('node-schedule');
-
 
 const express = require("express");
 const bodyParser = require("body-parser");
 const router = express.Router();
 const app = express();
-app.use("/",router);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use("/",router);
+
+const axios = require('axios')
 
 const prefix = '!';
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS] });
@@ -54,6 +53,7 @@ router.get('/hooks/test',(req, res) => {
 });
 
 router.post('/hooks/bids',(req, res) => {
+    console.log(req.body);
     let txId = req.body.flowTransactionId;
     console.log(txId);
     client.commands.get('notifyBidToDiscord').execute(client, txId);
