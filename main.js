@@ -26,6 +26,8 @@ for (const file of commandFiles) {
 
 client.once('ready', () => {
     console.log('DayNFT bot is online!');
+
+    //client.commands.get('notifyBidToDiscord').execute(client, "04f3bb26804b0f4198ed6359ebe580670a5f05fee96f29378d163ef30ec4ed07");
     
     // Assign/remove roles every 10 minutes
     schedule.scheduleJob("*/10 * * * *", function() {
@@ -62,8 +64,6 @@ router.post('/hooks/bids',(req, res) => {
 
 app.listen(3001, async () => {
     console.log("Started on PORT 3001");
-
-    //client.commands.get('notifyBidToDiscord').execute(client, "04f3bb26804b0f4198ed6359ebe580670a5f05fee96f29378d163ef30ec4ed07");
 })
 
 
