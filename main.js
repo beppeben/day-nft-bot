@@ -1,5 +1,4 @@
 const { Client, Intents, Collection } = require('discord.js');
-const { checkEmeraldIdentityDiscord} = require('./flowscripts/emerald_identity.js');
 const fs = require('fs');
 const schedule = require('node-schedule');
 
@@ -10,8 +9,6 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/",router);
-
-const axios = require('axios')
 
 const prefix = '!';
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS] });
@@ -24,10 +21,11 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
+
 client.once('ready', () => {
     console.log('DayNFT bot is online!');
 
-    //client.commands.get('notifyBidToDiscord').execute(client, "04f3bb26804b0f4198ed6359ebe580670a5f05fee96f29378d163ef30ec4ed07");
+    client.commands.get('pirate_sniper').execute(client);
     
     // Assign/remove roles every 10 minutes
     schedule.scheduleJob("*/10 * * * *", function() {
@@ -35,6 +33,7 @@ client.once('ready', () => {
         client.commands.get('assign_roles').execute(guild);
     }); 
 })
+
 
 // When a user types a message
 client.on('messageCreate', message => {
@@ -50,9 +49,6 @@ client.on('messageCreate', message => {
     }
 });
 
-router.get('/hooks/test',(req, res) => {
-    res.end('blah');
-});
 
 router.post('/hooks/bids',(req, res) => {
     console.log(req.body);

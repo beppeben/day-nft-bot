@@ -18,7 +18,6 @@ const execute = async (guild) => {
                     let ids = await getIDs(account);
                     let num_nfts = ids.length;
                     if(num_nfts > 0) {
-                        console.log(member.user.username);                     
                         var role_to_give = role_duke;
                         if(num_nfts > 4) {
                             role_to_give = role_king;
