@@ -116,6 +116,7 @@ function searchRemarkableTraits(event) {
     const id = url.substring(url.lastIndexOf('/') + 1);
     const price = Number(event.payload.base_price);
     var remarkable_traits = [];
+    console.log(price)
     if (id in storedAllAssets) {
         const asset = storedAllAssets[id];
         asset.traits.forEach(trait => {
@@ -123,7 +124,9 @@ function searchRemarkableTraits(event) {
             const trait_count = trait.trait_count;
             const trait_stats = storedAllTraits[trait_key];
             const floor = trait_stats.floor;
-            const num_listed = trait_stats.num_listed;
+            const num_listed = trait_stats.num_listed;         
+            console.log(trait_key)
+            console.log(floor)
             if (trait_count < 1000 && (num_listed == 0 || price < floor) ) {
                 var remarkable_trait = new Object();
                 remarkable_trait.trait_type = trait.trait_type;
