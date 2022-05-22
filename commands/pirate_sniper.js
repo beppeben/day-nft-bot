@@ -6,7 +6,7 @@ const { OpenSeaStreamClient } = require('@opensea/stream-js');
 const { WebSocket } = require('ws');
 const schedule = require('node-schedule');
 
-
+/*
 const os_client = new OpenSeaStreamClient({
     token: process.env.OPENSEA_KEY,
     connectOptions: {
@@ -19,10 +19,12 @@ const os_client = new OpenSeaStreamClient({
         os_client.connect();
     }
 });
+*/
 
 var storedAllAssets = {};
 var storedAllTraits = {};
 var downloading = false;
+var lastListing = null
 
 axiosRetry(axios, {
     retries: 10, // number of retries
@@ -47,6 +49,19 @@ const execute = async (disc_client) => {
             const collection_info = JSON.parse(data);
             storedAllAssets = collection_info.assets
             storedAllTraits = collection_info.traits
+            
+            /*
+            var floor = null
+            var floorid = null
+            for (const [key, value] of Object.entries(storedAllAssets)) {
+                if (floor == null || (value.price != null && value.price < floor)) {
+                    floor = value.price
+                    floorid = key
+                }
+            }
+            console.log(floor)
+            console.log(floorid)
+            */
         }  
     });
 
@@ -57,12 +72,21 @@ const execute = async (disc_client) => {
         }       
     });
 
+
+    // refresh every minute
+    processListings(disc_client);
+    schedule.scheduleJob("*/1 * * * *", function() {
+        processListings(disc_client);      
+    });
+    
+    /*
     // alerts for new listings
     os_client.onItemListed('pirates-of-the-metaverse-by-drip-studios', (event) => {
         console.log("new item listed")
         const notification = searchRemarkableTraits(event)
         notifyDiscord(disc_client, notification)
     });
+    */
 
     /*
     var remarkable_traits = []
@@ -81,6 +105,30 @@ const execute = async (disc_client) => {
     notification.remarkable_traits = remarkable_traits;
     notifyDiscord(disc_client, notification)
     */   
+}
+
+async function processListings(disc_client) {
+    const res = await axios.get("https://api.opensea.io/api/v1/events?only_opensea=false&collection_slug=pirates-of-the-metaverse-by-drip-studios&event_type=created", {
+         headers: {
+           "X-API-KEY": process.env.OPENSEA_KEY
+         }
+    });
+    if (lastListing == null) {
+        lastListing = res.data.asset_events[0].asset.name
+        return
+    }
+
+    for (var i = 0; i < res.data.asset_events.length; i++) {
+        const event = res.data.asset_events[i]
+        if (event.asset.name == lastListing) {
+            break;
+        }
+        console.log("New listing: " + event.asset.name)
+        const notification = searchRemarkableTraits(event)
+        notifyDiscord(disc_client, notification)
+    }
+
+    lastListing = res.data.asset_events[0].asset.name
 }
 
 function notifyDiscord(disc_client, notification) {
@@ -106,11 +154,51 @@ function notifyDiscord(disc_client, notification) {
         alertEmbed.addField(trait_desc, price_desc)
     })
     
-    if (notification.remarkable_traits.length > 0) {
+    if (notification.remarkable_traits.length > 0 && !notification.is_private && notification.auction_type == "dutch") {
         channel.send({ embeds: [alertEmbed] });
     }   
 }
 
+function searchRemarkableTraits(event) {
+    const url = event.asset.permalink;
+    const id = url.substring(url.lastIndexOf('/') + 1);
+    const price = Number(event.starting_price);
+    var remarkable_traits = [];
+    if (id in storedAllAssets) {
+        const asset = storedAllAssets[id];
+        asset.traits.forEach(trait => {
+            const trait_key = trait.trait_type + trait.value;
+            const trait_count = trait.trait_count;
+            const trait_stats = storedAllTraits[trait_key];
+            const floor = trait_stats.floor;
+            const num_listed = trait_stats.num_listed;         
+            if (trait_count < 1000 && (num_listed == 0 || price < floor) ) {
+                var remarkable_trait = new Object();
+                remarkable_trait.trait_type = trait.trait_type;
+                remarkable_trait.value = trait.value;
+                remarkable_trait.trait_count = trait_count;
+                remarkable_trait.floor = floor;
+                remarkable_trait.num_listed = num_listed;
+                remarkable_traits.push(remarkable_trait);                  
+            }
+        })
+    }
+    
+    var notification = new Object();
+    notification.id = id;
+    notification.url = url;
+    notification.price = price;
+    notification.thumbnail = event.asset.image_thumbnail_url;
+    notification.auction_type = event.auction_type;
+    notification.is_private = event.is_private
+    notification.remarkable_traits = remarkable_traits;
+    if (remarkable_traits.length > 0) {         
+        console.log(notification);
+    }
+    return notification
+}
+
+/*
 function searchRemarkableTraits(event) {
     const url = event.payload.item.permalink;
     const id = url.substring(url.lastIndexOf('/') + 1);
@@ -150,6 +238,7 @@ function searchRemarkableTraits(event) {
     }
     return notification
 }
+*/
 
 async function processCollection() {
     downloading = true
@@ -169,10 +258,8 @@ async function processCollection() {
 
         asset.price = null
         if(res.data.orders != null && res.data.orders.length > 0) {
-            asset.price = Number(res.data.orders[0].current_price)
-
             res.data.orders.forEach(order => {
-                if (order.side == 1 && order.sale_kind == 0 && order.payment_token_contract.symbol == "ETH") {
+                if (order.side == 1 && order.sale_kind == 0 && order.payment_token_contract.symbol == "ETH" && order.taker.address == "0x0000000000000000000000000000000000000000") {
                     if (asset.price == null) {
                         asset.price = Number(order.current_price)
                     } else {
