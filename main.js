@@ -25,7 +25,7 @@ for (const file of commandFiles) {
 client.once('ready', () => {
     console.log('DayNFT bot is online!');
 
-    client.commands.get('pirate_sniper').execute(client);
+    //client.commands.get('pirate_sniper').execute(client);
     
     // Assign/remove roles every 10 minutes
     schedule.scheduleJob("*/10 * * * *", function() {

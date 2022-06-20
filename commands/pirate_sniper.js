@@ -49,19 +49,6 @@ const execute = async (disc_client) => {
             const collection_info = JSON.parse(data);
             storedAllAssets = collection_info.assets
             storedAllTraits = collection_info.traits
-            
-            /*
-            var floor = null
-            var floorid = null
-            for (const [key, value] of Object.entries(storedAllAssets)) {
-                if (floor == null || (value.price != null && value.price < floor)) {
-                    floor = value.price
-                    floorid = key
-                }
-            }
-            console.log(floor)
-            console.log(floorid)
-            */
         }  
     });
 
@@ -77,34 +64,7 @@ const execute = async (disc_client) => {
     processListings(disc_client);
     schedule.scheduleJob("*/1 * * * *", function() {
         processListings(disc_client);      
-    });
-    
-    /*
-    // alerts for new listings
-    os_client.onItemListed('pirates-of-the-metaverse-by-drip-studios', (event) => {
-        console.log("new item listed")
-        const notification = searchRemarkableTraits(event)
-        notifyDiscord(disc_client, notification)
-    });
-    */
-
-    /*
-    var remarkable_traits = []
-    var remarkable_trait = new Object();
-    remarkable_trait.trait_type = "Outfit";
-    remarkable_trait.value = "Naked";
-    remarkable_trait.trait_count = 123;
-    remarkable_trait.floor = 140000000000000000;
-    remarkable_trait.num_listed = 13;
-    remarkable_traits.push(remarkable_trait);                  
-    var notification = new Object();
-    notification.id = 34;
-    notification.url = "https://google.com";
-    notification.price = 120000000000000000;
-    notification.thumbnail = "https://lh3.googleusercontent.com/YqmjpnFfP1dKjxb6asulDUoyBpb0DAD0E1I5I6FFAMzg73q6AC-ugGFqaZ7DX9DqrLAS34Z0dS25tFIVn4a87AdRQVop4kNQYNZfYA=s128"
-    notification.remarkable_traits = remarkable_traits;
-    notifyDiscord(disc_client, notification)
-    */   
+    }); 
 }
 
 async function processListings(disc_client) {
@@ -197,48 +157,6 @@ function searchRemarkableTraits(event) {
     }
     return notification
 }
-
-/*
-function searchRemarkableTraits(event) {
-    const url = event.payload.item.permalink;
-    const id = url.substring(url.lastIndexOf('/') + 1);
-    const price = Number(event.payload.base_price);
-    var remarkable_traits = [];
-    console.log(price)
-    if (id in storedAllAssets) {
-        const asset = storedAllAssets[id];
-        asset.traits.forEach(trait => {
-            const trait_key = trait.trait_type + trait.value;
-            const trait_count = trait.trait_count;
-            const trait_stats = storedAllTraits[trait_key];
-            const floor = trait_stats.floor;
-            const num_listed = trait_stats.num_listed;         
-            console.log(trait_key)
-            console.log(floor)
-            if (trait_count < 1000 && (num_listed == 0 || price < floor) ) {
-                var remarkable_trait = new Object();
-                remarkable_trait.trait_type = trait.trait_type;
-                remarkable_trait.value = trait.value;
-                remarkable_trait.trait_count = trait_count;
-                remarkable_trait.floor = floor;
-                remarkable_trait.num_listed = num_listed;
-                remarkable_traits.push(remarkable_trait);                  
-            }
-        })
-    }
-    
-    var notification = new Object();
-    notification.id = id;
-    notification.url = url;
-    notification.price = price;
-    notification.thumbnail = event.payload.item.metadata.image_url;
-    notification.remarkable_traits = remarkable_traits;
-    if (remarkable_traits.length > 0) {         
-        console.log(notification);
-    }
-    return notification
-}
-*/
 
 async function processCollection() {
     downloading = true
