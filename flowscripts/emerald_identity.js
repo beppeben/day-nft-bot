@@ -1,25 +1,25 @@
 const fcl = require("@onflow/fcl");
-const t = require("@onflow/types");
-const { setEnvironment } = require("flow-cadut");
+
+fcl.config({
+  "accessNode.api": "https://rest-mainnet.onflow.org"
+})
 
 const checkEmeraldIdentityDiscord = async (discordID) => {
-    await setEnvironment("mainnet");
-    const accountResponse = await fcl.send([
-        fcl.script`
-      import EmeraldIdentity from 0x39e42c67cc851cfb
+    const accountResponse = await fcl.query({
+      cadence: `
+          import EmeraldIdentity from 0x39e42c67cc851cfb
 
-      pub fun main(discordID: String): Address? {
-        return EmeraldIdentity.getAccountFromDiscord(discordID: discordID)
-      }
+          pub fun main(discordID: String): Address? {
+            return EmeraldIdentity.getAccountFromDiscord(discordID: discordID)
+          }
       `,
-        fcl.args([
-            fcl.arg(discordID, t.String)
-        ])
-    ]).then(fcl.decode);
+      args: (arg, t) => [
+        arg(discordID, t.String)
+      ],
+    });
 
     return accountResponse;
 }
-
 
 module.exports = {
     checkEmeraldIdentityDiscord

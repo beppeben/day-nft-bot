@@ -14,8 +14,7 @@
   "author": "Jacob Tucker",
   "license": "ISC",
   "dependencies": {
-    "@onflow/fcl": "^0.0.78-alpha.6",
-    "@onflow/types": "^0.0.5",
+    "@onflow/fcl": "^1.1.0",
     "@opensea/stream-js": "^0.0.20",
     "api": "^4.5.0",
     "axios": "^0.26.1",
