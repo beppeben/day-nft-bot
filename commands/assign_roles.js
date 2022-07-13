@@ -8,10 +8,10 @@ const role_king = '956329106809704498';
 const role_queen = '996160808239235072';
 const roles = [role_duke, role_prince, role_king, role_queen];
 
-const execute = async (guild) => {
-    console.log("assigning roles");
+const execute = async (guild) => {   
     guild.members.fetch().then(async members =>
     {
+        console.log("assigning roles");
         for (const [key, member] of members) {
             let account = await checkEmeraldIdentityDiscord(member.user.id);
             if (account) {
@@ -38,8 +38,9 @@ const execute = async (guild) => {
                 } catch(error){};
             }
         }
+        console.log("roles assigned");
     }).catch(console.log);
-    console.log("roles assigned");
+    
 }
 
 
