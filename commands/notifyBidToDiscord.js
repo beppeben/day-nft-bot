@@ -1,10 +1,12 @@
 const { MessageEmbed } = require('discord.js');
-const { setEnvironment } = require("flow-cadut");
 const fcl = require("@onflow/fcl");
-const axios = require('axios')
+const axios = require('axios');
+
+fcl.config({
+  "accessNode.api": "https://rest-mainnet.onflow.org"
+})
 
 const execute = async (client, txId) => {
-    setEnvironment("mainnet");
     fcl
       .send([
         fcl.getTransaction(txId),
