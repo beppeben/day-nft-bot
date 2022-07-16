@@ -59,7 +59,7 @@ function sendBidText(client, author, date, amount, message) {
 
     
     var sketch_path = "/home/giuseppe/day-nft/day-nft-app/public/"
-    var out_path = "/var/www/day-nft/imgs-temp/"
+    var out_path = "/var/www/day-nft/imgs-temp/" + date
     eval(fs.readFileSync(sketch_path + 'sketch.js')+'');
     p5.createSketch(sketchWithParams(date, message, 600, sketch_path, out_path));
     setTimeout(function() {
