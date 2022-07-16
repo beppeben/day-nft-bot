@@ -114,7 +114,7 @@ function notifyDiscord(disc_client, notification) {
         alertEmbed.addField(trait_desc, price_desc)
     })
     
-    if (notification.remarkable_traits.length > 0 && !notification.is_private && notification.auction_type == "dutch") {
+    if (notification.remarkable_traits.length > 0 && !notification.is_private && (notification.auction_type == "dutch" || notification.auction_type == null)) {
         channel.send({ embeds: [alertEmbed] });
     }   
 }
