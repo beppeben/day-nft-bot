@@ -106,7 +106,7 @@ function notifyDiscord(disc_client, notification) {
     notification.remarkable_traits.forEach(trait => {
         const num_listed = trait.num_listed + 1
         const trait_desc = trait.trait_type + ": " + trait.value + " (" + trait.trait_count.toString() + " total, " + num_listed.toString() + " listed)"
-        var price_desc = ""
+        var price_desc = "Only one listed"
         if (trait.floor != null) {
             const perc = Math.round((1 - notification.price / trait.floor) * 1000) / 10
             price_desc = perc.toString() + "% below trait floor price"
