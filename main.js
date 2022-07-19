@@ -32,6 +32,8 @@ client.once('ready', () => {
         const guild = client.guilds.cache.get('939459994611494962');
         client.commands.get('assign_roles').execute(guild);
     }); 
+
+
 })
 
 

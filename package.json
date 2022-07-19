@@ -22,8 +22,10 @@
     "discord.js": "^13.3.1",
     "express": "^4.17.3",
     "flow-cadut": "^0.1.15-alpha.12",
+    "form-data": "^4.0.0",
     "node-p5": "^1.0.4",
     "node-schedule": "^2.1.0",
+    "twit": "^2.2.11",
     "ws": "^8.6.0"
   },
   "devDependencies": {

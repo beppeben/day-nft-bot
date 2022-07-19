@@ -33,7 +33,7 @@ axiosRetry(axios, {
       return retryCount * 2000; // time interval between retries
     },
     retryCondition: (error) => {
-      console.log(error.response.status);
+      console.log(error);
       return true;
     },
 });

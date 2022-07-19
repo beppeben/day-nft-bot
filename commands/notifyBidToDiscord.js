@@ -8,6 +8,16 @@ fcl.config({
   "accessNode.api": "https://rest-mainnet.onflow.org"
 })
 
+var dateToMaxBid = new Object();
+
+const Twit = require("twit");
+const T = new Twit({
+  consumer_key: process.env.TWITTER_API_KEY,
+  consumer_secret: process.env.TWITTER_API_SECRET,
+  access_token: process.env.TWITTER_TOKEN,
+  access_token_secret: process.env.TWITTER_TOKEN_SECRET,
+});
+
 const execute = async (client, txId) => {
     fcl
       .send([
@@ -46,9 +56,9 @@ function processTxAndSendText(client, tx) {
 }
 
 function sendBidText(client, author, date, amount, message) {
-    text = author + " has made a bid on date " + date + " for " + amount + " FLOW with message '" + message + "'";
-    const channel = client.channels.cache.get('961715085661831258');
 
+    // send to Discord
+    const channel = client.channels.cache.get('961715085661831258');
     const bidEmbed = new MessageEmbed()
         .setColor('#0099ff')
         .setAuthor(author)
@@ -56,15 +66,32 @@ function sendBidText(client, author, date, amount, message) {
         .addField('Amount', "" + amount + " FLOW", true)
         .setDescription(message)
     channel.send({ embeds: [bidEmbed] });
-
-    var file_name = "test"
-    var sketch_path = "/home/giuseppe/day-nft/day-nft-app/public/"
-    var out_path = "/var/www/day-nft/imgs-temp/" + file_name
-    eval(fs.readFileSync(sketch_path + 'sketch.js')+'');
-    p5.createSketch(sketchWithParams(date, message, 600, sketch_path, out_path));
-    setTimeout(function() {
-        //process.exit();
-    }, 3000);
+    
+    // create image and post a tweet
+    if(dateToMaxBid[date] == undefined || amount > dateToMaxBid[date]) {
+        var sketch_path = process.env.DAYNFT_PUBLIC
+        var out_path = process.env.DAYNFT_IMG_TEMP + "img"
+        eval(fs.readFileSync(sketch_path + 'sketch.js')+'');
+        p5.createSketch(sketchWithParams(date, message, 600, sketch_path, out_path));
+        setTimeout(function() {
+            var filePath = out_path + ".png"
+            T.postMediaChunked({ file_path: filePath }, function (err, data, response) {
+                console.log(data)
+                if (err) {
+                    console.log("Error: ", err.message);
+                    return;
+                }
+                const text = "New bid by " + author + " for " + amount + " Flow";
+                const onFinish = (err, reply) => {
+                    if (err) {
+                      console.log("Error: ", err.message);
+                    }
+                };
+                T.post("statuses/update", { status: text, media_ids: data.media_id_string }, onFinish);
+            })
+        }, 3000);
+        dateToMaxBid[date] = amount;
+    }
 }
 
 
