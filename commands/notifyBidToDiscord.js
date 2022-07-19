@@ -35,7 +35,7 @@ function processTxAndSendText(client, tx) {
     let message = tx.args[1].value;
     let address = "0x" + tx.authorizers[0];
     let rawDate = tx.args[2].value;
-    let date = rawDate[0].value + "/" + rawDate[1].value + "/" + rawDate[2].value;
+    let date = Number(rawDate[0].value).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false}) + "-" + Number(rawDate[1].value).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false}) + "-" + rawDate[2].value;
 
     axios
       .get("https://lookup.find.xyz/api/lookup?address=" + address)
@@ -81,7 +81,7 @@ function sendBidText(client, author, date, amount, message) {
                     console.log("Error: ", err.message);
                     return;
                 }
-                const text = "New bid by " + author + " for " + amount + " Flow";
+                const text = "New bid by " + author + " for " + amount + " FLOW!";
                 const onFinish = (err, reply) => {
                     if (err) {
                       console.log("Error: ", err.message);
