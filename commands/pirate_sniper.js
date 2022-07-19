@@ -74,7 +74,9 @@ async function processListings(disc_client) {
          }
     });
     if (lastListing == null) {
-        lastListing = res.data.asset_events[0].asset.name
+        if (res.data.asset_events[0].asset != null) {
+            lastListing = res.data.asset_events[0].asset.name
+        }   
         return
     }
 
