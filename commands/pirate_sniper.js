@@ -177,9 +177,9 @@ async function processCollection() {
         var asset = new Object();
 
         asset.price = null
-        if(res.data.orders != null && res.data.orders.length > 0) {
-            res.data.orders.forEach(order => {
-                if (order.side == 1 && order.sale_kind == 0 && order.payment_token_contract.symbol == "ETH" && order.taker.address == "0x0000000000000000000000000000000000000000") {
+        if(res.data.seaport_sell_orders != null) {
+            res.data.seaport_sell_orders.forEach(order => {
+                if (order.side == "ask" && order.cancelled == false && order.taker == null) {
                     if (asset.price == null) {
                         asset.price = Number(order.current_price)
                     } else {
