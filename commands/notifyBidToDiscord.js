@@ -68,6 +68,8 @@ function sendBidText(client, author, date, amount, message) {
     channel.send({ embeds: [bidEmbed] });
     
     // create image and post a tweet
+    console.log("current max bid: " + dateToMaxBid[date])
+    console.log("new amount: " + amount)
     if(dateToMaxBid[date] == undefined || amount > dateToMaxBid[date]) {
         var sketch_path = process.env.DAYNFT_PUBLIC
         var out_path = process.env.DAYNFT_IMG_TEMP + "img"
