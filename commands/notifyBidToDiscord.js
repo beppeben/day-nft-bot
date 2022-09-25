@@ -71,14 +71,19 @@ function sendBidText(client, author, date, amount, message) {
     console.log("current max bid: " + dateToMaxBid[date])
     console.log("new amount: " + amount)
     if(dateToMaxBid[date] == undefined || amount > dateToMaxBid[date]) {
-        var sketch_path = process.env.DAYNFT_PUBLIC
         var out_path = process.env.DAYNFT_IMG_TEMP + "img"
+        /*
+        var sketch_path = process.env.DAYNFT_PUBLIC
         eval(fs.readFileSync(sketch_path + 'sketch_drinks.js')+'');
         let resourcesToPreload = {
             flow_logo: p5.loadImage(sketch_path + 'flow_pixel.png'),
             stick_img: p5.loadImage(sketch_path + 'piggo_cut.png')
         }
         p5.createSketch(sketchWithParams(date, message, 600, sketch_path, out_path), resourcesToPreload);
+        */
+
+        require('child_process').fork(process.env.DAYNFT_PROCESSOR + 'node_p5.js', [process.env.DAYNFT_PUBLIC, date, message, out_path]); 
+        
         setTimeout(function() {
             var filePath = out_path + ".png"
             T.postMediaChunked({ file_path: filePath }, function (err, data, response) {
